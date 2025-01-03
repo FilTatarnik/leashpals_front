@@ -1,5 +1,4 @@
 import Image from "next/image";
-// import { Code } from 'next';
 
 async function fetchUsers() {
   try {
@@ -34,7 +33,7 @@ export default async function Home() {
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <h1>LeashPals</h1>
-        <div>  
+        <div>
           <h2>Users</h2>
           <ul>
             {users.map((user) => (
