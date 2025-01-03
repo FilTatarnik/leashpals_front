@@ -1,3 +1,5 @@
+'use client';
+import { useState } from "react";
 import Image from "next/image";
 import Form from 'next/form';
 
@@ -10,7 +12,7 @@ async function fetchUsers() {
     return res.json();
   } catch (error) {
     console.error('Error fetching users:', error);
-    return []; // Return an empty array as a fallback
+    return [];
   }
 }
 
@@ -23,7 +25,7 @@ async function fetchDogs() {
     return res.json();
   } catch (error) {
     console.error('Error fetching users:', error);
-    return []; // Return an empty array as a fallback
+    return [];
   }
 }
 
@@ -36,49 +38,50 @@ async function fetchAppointments() {
     return res.json();
   } catch (error) {
     console.error('Error fetching users:', error);
-    return []; // Return an empty array as a fallback
+    return [];
   }
 }
 
-export default async function Home() {
-  const users = await fetchUsers();
-  const dogs = await fetchDogs();
-  const appointments = await fetchAppointments();
+export default function Home() {
+  const [showRegister, setShowRegister] = useState(false);
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <h1 className="text-6xl">LeashPals</h1>
-        <Form action=''>
-            <input name='query' placeholder="Username" type="text" className="m-2 p-1 text-black"/>
-            <input name='query' placeholder="Password" type="password" className="m-2 p-1 text-black"/>
-            <button type='submit' className="border-2 border-white-500 p-1">Register</button>
-            <button type='submit' className="border-2 border-white-500 p-1 ml-2">Login</button>
-        </Form>        
-        <div>
-          <h2 className='text-2xl'>Users</h2>
-          <ul>
-            {users.map((user) => (
-              <li key={user.id}>{user.username}</li>
-            ))}
-          </ul>
-        </div>
-        <div>  
-          <h2 className='text-2xl'>Dogs</h2>
-          <ul>
-            {dogs.map((dog) => (
-              <li key={dog.id}>{dog.name}</li>
-            ))}
-          </ul>
-        </div>
-        <div>  
-          <h2 className='text-2xl'>Appointments</h2>
-          <ul>
-            {appointments.map((appointment) => (
-              <li key={appointment.id}>Dog: #{appointment.dog_id} Walker: #{appointment.walker_id} Done: </li>
-            ))}
-          </ul>
-        </div>     
+
+        {!showRegister ? (
+          <div className="flex flex-col items-center">
+            <Form name='loginForms' action=''>
+              <input name='query' placeholder="Username" type="username" className="m-2 p-1 text-black"/>
+              <input name='query' placeholder="Password" type="password" className="m-2 p-1 text-black"/>
+              <button type='submit' className="border-2 border-white-500 p-1 ml-2">Login</button>
+            </Form>
+            <button 
+              onClick={() => setShowRegister(true)}
+              className="mt-4 text-sm"
+            >
+              Need to register?
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center">
+            <Form name='registrationForms' action=''>
+              <input name='query' placeholder="Username" type="username" className="m-2 p-1 text-black"/>
+              <input name='query' placeholder="Email" type="email" className="m-2 p-1 text-black"/>
+              <input name='query' placeholder="Password" type="password" className="m-2 p-1 text-black"/>
+              <input name='query' placeholder="Owner" type="checkbox" className="m-2 p-1"/> Owner
+              <input name='query' placeholder="Walker" type="checkbox" className="m-2 p-1"/> Walker
+              <button type='submit' className="ml-2 border-2 border-white-500 p-1">Register</button>
+            </Form>
+            <button 
+              onClick={() => setShowRegister(false)}
+              className="mt-4 text-sm"
+            >
+              Back to login
+            </button>
+          </div>
+        )}
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
       </footer>
