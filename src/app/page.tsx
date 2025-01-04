@@ -59,7 +59,7 @@ export default function Home() {
             </Form>
             <button 
               onClick={() => setShowRegister(true)}
-              className="mt-4 text-sm"
+              className="mt-4 text-sm underline"
             >
               Need to register?
             </button>
@@ -76,7 +76,7 @@ export default function Home() {
             </Form>
             <button 
               onClick={() => setShowRegister(false)}
-              className="mt-4 text-sm"
+              className="mt-4 text-sm underline"
             >
               Back to login
             </button>
