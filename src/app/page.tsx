@@ -70,8 +70,8 @@ export default function Home() {
               <input name='query' placeholder="Username" type="username" className="m-2 p-1 text-black"/>
               <input name='query' placeholder="Email" type="email" className="m-2 p-1 text-black"/>
               <input name='query' placeholder="Password" type="password" className="m-2 p-1 text-black"/>
-              <input name='query' placeholder="Owner" type="checkbox" className="m-2 p-1"/> Owner
-              <input name='query' placeholder="Walker" type="checkbox" className="m-2 p-1"/> Walker
+              <input name='query' placeholder="Owner" type="radio" className="m-2 p-1"/> Owner
+              <input name='query' placeholder="Walker" type="radio" className="m-2 p-1"/> Walker
               <button type='submit' className="ml-2 border-2 border-white-500 p-1">Register</button>
             </Form>
             <button 
