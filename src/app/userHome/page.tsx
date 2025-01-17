@@ -62,6 +62,8 @@ export default function UserHome() {
   return (
     <div className="flex flex-col items-center">
       <h1 className="text-6xl">Hello {user.username}!</h1>
+      <h2>Role: {user.role}</h2>
+
       <p className="text-lg">Welcome to LeashPals.</p>
       <button onClick={handleLogout}>
         Logout

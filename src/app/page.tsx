@@ -3,57 +3,131 @@ import { useState } from "react";
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const [showRegister, setShowRegister] = useState(false);
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('Owner');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const router = useRouter();
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const endpoint = showRegister
+      ? 'http://localhost:42069/api/users/register'
+      : 'http://localhost:42069/api/users/login';
+
     try {
-      const res = await fetch('http://localhost:42069/api/users/login', {
+      const body = showRegister
+        ? { username, email, password, role }
+        : { username, password };
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
-        throw new Error('Invalid login credentials');
+        throw new Error(showRegister ? 'Registration failed' : 'Invalid login credentials');
       }
 
       const data = await res.json();
-      localStorage.setItem('token', data.token); // Save token
-      router.push('/userHome'); // Redirect to user home page
+      if (!showRegister) {
+        // Login logic
+        localStorage.setItem('token', data.token); // Save token
+        router.push('/userHome'); // Redirect to user home page
+      } else {
+        // Registration logic
+        setSuccess('Registration successful! You can now log in.');
+        setShowRegister(false);
+      }
     } catch (err) {
       setError(err.message);
     }
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="text-6xl mb-6">LeashPals</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Username"
-          className="border p-2"
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          className="border p-2"
-        />
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-          Login
-        </button>
-      </form>
-      {error && <p className="text-red-500 mt-4">{error}</p>}
+    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+        <h1 className="text-6xl">LeashPals</h1>
+
+        <form onSubmit={handleSubmit} className="flex flex-col items-center">
+          <h2 className="text-2xl">{showRegister ? 'Register' : 'Login'}</h2>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
+            className="m-2 p-1 text-black"
+            required
+          />
+          {showRegister && (
+            <>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                className="m-2 p-1 text-black"
+                required
+              />
+              <div className="flex gap-4">
+                <label>
+                  <input
+                    type="radio"
+                    value="owner"
+                    checked={role === 'owner'}
+                    onChange={() => setRole('owner')}
+                  />
+                  Owner
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    value="walker"
+                    checked={role === 'walker'}
+                    onChange={() => setRole('walker')}
+                  />
+                  Walker
+                </label>
+              </div>
+            </>
+          )}
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            className="m-2 p-1 text-black"
+            required
+          />
+          <button type="submit" className="border-2 border-white-500 p-1">
+            {showRegister ? 'Register' : 'Login'}
+          </button>
+        </form>
+
+        {showRegister ? (
+          <button
+            onClick={() => setShowRegister(false)}
+            className="mt-4 text-sm underline"
+          >
+            Back to login
+          </button>
+        ) : (
+          <button
+            onClick={() => setShowRegister(true)}
+            className="mt-4 text-sm underline"
+          >
+            Need to register?
+          </button>
+        )}
+
+        {error && <p className="text-red-500 mt-4">{error}</p>}
+        {success && <p className="text-green-500 mt-4">{success}</p>}
+      </main>
+      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer>
     </div>
   );
 }
