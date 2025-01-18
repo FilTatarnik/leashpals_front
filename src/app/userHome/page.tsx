@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import DogRegistrationForm from '@/components/Owner/DogRegistrationForm';
 
 async function fetchUser() {
 try {
@@ -67,6 +68,7 @@ export default function UserHome() {
           <button onClick={handleLogout}>
             Logout
           </button>
+          <DogRegistrationForm />
         </div>
       </main>
     </div>
