@@ -17,29 +17,28 @@ export default function Home() {
     const endpoint = showRegister
       ? 'http://localhost:42069/api/users/register'
       : 'http://localhost:42069/api/users/login';
-
+  
     try {
       const body = showRegister
         ? { username, email, password, role }
         : { username, password };
-
+  
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-
+  
       if (!res.ok) {
         throw new Error(showRegister ? 'Registration failed' : 'Invalid login credentials');
       }
-
+  
       const data = await res.json();
       if (!showRegister) {
-        // Login logic
-        localStorage.setItem('token', data.token); // Save token
-        router.push('/userHome'); // Redirect to user home page
+        // Store the token
+        localStorage.setItem('token', data.token);
+        router.push('/userHome');
       } else {
-        // Registration logic
         setSuccess('Registration successful! You can now log in.');
         setShowRegister(false);
       }
@@ -47,6 +46,7 @@ export default function Home() {
       setError(err.message);
     }
   };
+  
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">

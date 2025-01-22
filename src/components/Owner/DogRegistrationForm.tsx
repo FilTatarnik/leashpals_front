@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 export default function DogRegistrationForm() {
     const [name, setName] = useState('');
     const [breed, setBreed] = useState('');
-    const [age, setAge] = useState(null);
+    const [age, setAge] = useState();
     const [personality, setPersonality] = useState('');
     const [owner_id, setOwner_id] = useState('');
     const [error, setError] = useState('');
@@ -26,7 +26,7 @@ export default function DogRegistrationForm() {
             if(!res.ok) {
                 throw new Error('Registration Failed');
             };
-
+            console.log(data);
             const data = await res.json();
 
         } catch (err) {
@@ -37,8 +37,7 @@ export default function DogRegistrationForm() {
         <div>
             <main>
                 <h1>Dog Registration Form</h1>
-                <form action="">
-                    <h2>
+                <form onSubmit={handleSubmit}>
                         <input
                          type="text"
                          value={name} 
@@ -48,38 +47,38 @@ export default function DogRegistrationForm() {
                          required
                          />
                          <input 
-                         type="breed" 
+                         type="text" 
                          value={breed}
-                         onChange={(e)=>setName(e.target.value)}
+                         onChange={(e)=>setBreed(e.target.value)}
                          placeholder="Breed"
                          className='m-2 p-1 text-black'
                          required
                          />
                          <input 
-                         type="age" 
+                         type="number" 
                          value={age}
-                         onChange={(e)=>setName(e.target.value)}
                          placeholder="Age"
+                         onChange={(e)=>setAge(e.target.value)}
                          className='m-2 p-1 text-black'
                          required
                          />
                          <input 
-                         type="personality" 
+                         type="text" 
                          value={personality}
-                         onChange={(e)=>setName(e.target.value)}
+                         onChange={(e)=>setPersonality(e.target.value)}
                          placeholder="Personality"
                          className='m-2 p-1 text-black'
                          required
                          />
                          <input 
-                         type='owner_id' 
+                         type='number' 
                          value={owner_id}
-                         onChange={(e)=>setName(e.target.value)}
+                         onChange={(e)=>setOwner_id(e.target.value)}
                          placeholder="Owner ID?"
                          className='m-2 p-1 text-black'
                          required
                          />
-                    </h2>
+                         <button type="submit" formMethod="POST">Register</button>
                 </form>
             </main>
         </div>
