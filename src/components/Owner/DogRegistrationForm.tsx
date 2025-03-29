@@ -36,6 +36,11 @@ export default function DogRegistrationForm() {
     return(
         <div>
             <main>
+                {/* 
+                if user.Role == owner
+                show registration form
+                else don't show it
+                */}
                 <h1>Dog Registration Form</h1>
                 <form onSubmit={handleSubmit}>
                         <input

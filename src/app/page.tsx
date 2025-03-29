@@ -19,10 +19,7 @@ export default function Home() {
       : 'http://localhost:42069/api/users/login';
   
     try {
-      const body = showRegister
-        ? { username, email, password, role }
-        : { username, password };
-  
+      const body = showRegister  ? { username, email, password, role }  : { username, password };
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
