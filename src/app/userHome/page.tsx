@@ -116,10 +116,13 @@ export default function UserHome() {
         <div className="flex flex-col items-center">
           <h1 className="text-6xl">Hello {user.username}!</h1>
           <h2>Role: {user.role}</h2>
+
+          {user.role === 'walker' && 
           <h2>Appointments: {appointments.length > 0 
-            ? appointments.map(appt => getDogName(appt.dog_id)).join(', ') 
+            ? appointments.filter(appt => appt.walker_id === user.id).map(appt => getDogName(appt.dog_id)).join(', ') 
             : 'No appointments found'}
           </h2>
+          }
           <p className="text-lg">Welcome to LeashPals.</p>
           <button onClick={() => { localStorage.removeItem('authToken'); router.push('/'); }}>
             Logout
