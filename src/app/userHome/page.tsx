@@ -127,7 +127,7 @@ export default function UserHome() {
           <button onClick={() => { localStorage.removeItem('authToken'); router.push('/'); }}>
             Logout
           </button>
-          {user.role === 'owner' && <DogRegistrationForm />}
+          {user.role === 'owner' && <DogRegistrationForm ownerId={user.id}/>}
         </div>
       </main>
     </div>
