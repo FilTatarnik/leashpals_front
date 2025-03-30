@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DogRegistrationForm from '@/components/Owner/DogRegistrationForm';
+import AppointmentScheduler from '@/components/Owner/AppointmentScheduler';
 
 async function fetchUser() {
   try {
@@ -116,7 +117,7 @@ export default function UserHome() {
         <div className="flex flex-col items-center">
           <h1 className="text-6xl">Hello {user.username}!</h1>
           <h2>Role: {user.role}</h2>
-
+  
           {user.role === 'walker' && 
           <h2>Appointments: {appointments.length > 0 
             ? appointments.filter(appt => appt.walker_id === user.id).map(appt => getDogName(appt.dog_id)).join(', ') 
@@ -124,12 +125,26 @@ export default function UserHome() {
           </h2>
           }
           <p className="text-lg">Welcome to LeashPals.</p>
+          
+          {user.role === 'owner' && 
+          <div>
+            <h2>Dogs:</h2>
+            <ul>
+              {dogs.filter(dog => dog.owner_id === user.id).map(dog => (
+                <li key={dog.id}>{dog.name}</li>
+              ))}
+            </ul>
+          </div>
+          }
+  
           <button onClick={() => { localStorage.removeItem('authToken'); router.push('/'); }}>
             Logout
           </button>
           {user.role === 'owner' && <DogRegistrationForm ownerId={user.id}/>}
+          {user.role === 'owner' && <AppointmentScheduler ownerId={user.id} dogId={dogs.id}/>}
         </div>
       </main>
     </div>
   );
+  
 }
