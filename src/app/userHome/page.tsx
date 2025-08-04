@@ -109,7 +109,8 @@ export default function UserHome() {
     const dog = dogs.find(d => Number(d.id) === Number(dogId));
     return dog ? dog.name : `Unknown Dog (${dogId})`;
   };
-  
+
+  //-----original-how i want it to look//
   // return (
   //   <div className="min-h-screen p-8 sm:p-16 flex flex-col gap-8">
   //     {/* Header */}
@@ -169,33 +170,101 @@ export default function UserHome() {
   //     </main>
   //   </div>
   // );
+
+  //----new//
+  // return (
+  //   <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
+  //     <p className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl items-center">
+  //       Welcome to LeashPals!
+  //     </p>      
+  //     <main className="flex flex-col gap-8 row-start-2 items-center justify-center">
+  //     <h1 className="text-6xl">Hello {user.username}!</h1>
+  //       <div className="flex flex-col items-center border">
+  //         <h2>Role: {user.role}</h2>
+  //         {user.role === 'walker' && <h2>Appointments: {appointments.length > 0 ? appointments.filter(appt => appt.walker_id === user.id).map(appt => getDogName(appt.dog_id)).join(', ') : 'No appointments found'}</h2>}
+  //         {user.role === 'owner' && <div><h2>Dogs:</h2>
+  //           <ul>
+  //             {dogs.filter(dog => dog.owner_id === user.id).map(dog => (
+  //               <li key={dog.id}>{dog.name}</li>
+  //             ))}
+  //           </ul>
+  //         </div>
+  //         }
+  
+  //         <button onClick={() => { localStorage.removeItem('authToken'); router.push('/'); }}>
+  //           Logout
+  //         </button>
+  //         {user.role === 'owner' && <DogRegistrationForm ownerId={user.id}/>}
+  //         {user.role === 'owner' && <AppointmentScheduler ownerId={user.id} dogId={dogs.id}/>}
+  //       </div>
+  //     </main>
+  //   </div>
+  // );
+  //----//
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <p className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl items-center">
-        Welcome to LeashPals!
-      </p>      
-      <main className="flex flex-col gap-8 row-start-2 items-center justify-center">
+  <div className="min-h-screen p-8 sm:p-16 flex flex-col gap-8 ">
+    {/* Header */}
+    <header className="flex justify-between items-center">
       <h1 className="text-6xl">Hello {user.username}!</h1>
-        <div className="flex flex-col items-center border">
-          <h2>Role: {user.role}</h2>
-          {user.role === 'walker' && <h2>Appointments: {appointments.length > 0 ? appointments.filter(appt => appt.walker_id === user.id).map(appt => getDogName(appt.dog_id)).join(', ') : 'No appointments found'}</h2>}
-          {user.role === 'owner' && <div><h2>Dogs:</h2>
-            <ul>
-              {dogs.filter(dog => dog.owner_id === user.id).map(dog => (
-                <li key={dog.id}>{dog.name}</li>
-              ))}
-            </ul>
+      <h2>Role: {user.role}</h2>
+      <div className="flex gap-4">
+        <button className="border px-4 py-2">Settings</button>
+        <button 
+          className="border px-4 py-2"
+          onClick={() => {
+            localStorage.removeItem('authToken');
+            router.push('/');
+          }}
+        >
+          Logout
+        </button>
+      </div>
+    </header>
+
+    {/* Main Content */}
+    <main className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-8">
+      {/* Dogs Section */}
+      <section className="border p-4 flex flex-col items-center">
+        <h2 className="text-4xl">Dogs</h2>
+        {user.role === 'owner' ? (
+          <div className="flex gap-4 overflow-auto p-4">
+            {dogs.filter(dog => dog.owner_id === user.id).map(dog => (
+              <div key={dog.id} className="border p-4 min-w-[150px]">
+                <h3 className="text-lg">{dog.name}</h3>
+                <p className="text-lg">{dog.breed}</p>
+                <p className="text-lg">Age:{dog.age}</p>
+                <p className="text-lg">{dog.personality}</p>
+              </div>
+            ))}
           </div>
-          }
-  
-          <button onClick={() => { localStorage.removeItem('authToken'); router.push('/'); }}>
-            Logout
-          </button>
-          {user.role === 'owner' && <DogRegistrationForm ownerId={user.id}/>}
-          {user.role === 'owner' && <AppointmentScheduler ownerId={user.id} dogId={dogs.id}/>}
-        </div>
-      </main>
-    </div>
-  );
-  
+        ) : (
+          <div className="flex gap-4 overflow-auto p-4 ">
+            {appointments
+              .filter(appt => appt.walker_id === user.id)
+              .map(appt => (
+                <div key={appt.id} className="border p-4 min-w-[150px] rounded-md">
+                  <h3 className="text-lg">{getDogName(appt.dog_id)}</h3>
+                  <p className="text-sm text-gray-700">Date: {appt.date}</p>
+                  <p className="text-sm text-gray-700">Time: {appt.time}</p>
+                  <p className="text-sm text-gray-700">{appt.status}</p>
+                  <button>Completed?</button>                                 
+                  </div>
+              ))}
+          </div>
+        )}
+      </section>
+
+      {/* Scheduling Section (Only Owner) */}
+      {user.role === 'owner' && (
+        <section className="border p-4 flex flex-col gap-4 items-center">
+          <h2 className="text-4xl">Schedule Appt</h2>
+          <AppointmentScheduler ownerId={user.id} />
+          <DogRegistrationForm ownerId={user.id} />
+        </section>
+      )}
+    </main>
+  </div>
+);
+
 };

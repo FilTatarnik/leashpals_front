@@ -48,7 +48,7 @@ export default function Home() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
     <main className="flex flex-col gap-8 row-start-2 items-center justify-center sm:items-center sm:justify-center">
-      <h1 className="text-6xl">LeashPals</h1>
+      <h1 className="text-8xl">LeashPals</h1>
         <form onSubmit={handleSubmit} className="flex flex-col items-center">
           <h2 className="text-2xl">{showRegister ? 'Register' : 'Login'}</h2>
           <input
