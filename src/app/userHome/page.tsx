@@ -226,9 +226,9 @@ export default function UserHome() {
     <main className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-8">
       {/* Dogs Section */}
       <section className="border p-4 flex flex-col items-center">
-        <h2 className="text-4xl">Dogs</h2>
         {user.role === 'owner' ? (
           <div className="flex gap-4 overflow-auto p-4">
+            <h2 className="text-4xl">Dogs</h2>
             {dogs.filter(dog => dog.owner_id === user.id).map(dog => (
               <div key={dog.id} className="border p-4 min-w-[150px]">
                 <h3 className="text-lg">{dog.name}</h3>
@@ -239,10 +239,9 @@ export default function UserHome() {
             ))}
           </div>
         ) : (
-          <div className="flex gap-4 overflow-auto p-4 ">
-            {appointments
-              .filter(appt => appt.walker_id === user.id)
-              .map(appt => (
+          <div className="flex flex-col gap-4 overflow-auto p-4 ">
+            <h2 className="text-4xl">Appointments</h2>
+            {appointments.filter(appt => appt.walker_id === user.id).map(appt => (
                 <div key={appt.id} className="border p-4 min-w-[150px] rounded-md">
                   <h3 className="text-lg">{getDogName(appt.dog_id)}</h3>
                   <p className="text-sm text-gray-700">Date: {appt.date}</p>
