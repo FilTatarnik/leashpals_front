@@ -61,6 +61,36 @@ async function fetchDogs() {
   }
 }
 
+async function updateAppointmentStatus(appointmentId: string | number) {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No token found!');
+
+    const updatePayload = {
+      status: 'Completed',
+    };
+
+    //Now use new PATCH method
+    const res = await fetch(`http://localhost:42069/appointments/${appointmentId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(updatePayload),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to update appointment - ${res.status}`);
+    }
+
+    console.log(`Appointment ${appointmentId} marked as completed.`);
+    return res.json();
+  } catch (error) {
+    console.error('Error updating appointment status', error);
+    return null;
+  }
+}
 
 export default function UserHome() {
   const [user, setUser] = useState(null);
@@ -73,6 +103,19 @@ export default function UserHome() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userData');
     router.push('/');
+  };
+
+  const handleAppointmentComplete = async (appointmentId) => {
+    const updatedAppt = await updateAppointmentStatus(appointmentId);
+    
+    if (updatedAppt) {
+        // Update the local appointments state to show the new status without a full refresh
+        setAppointments(prevAppointments => 
+            prevAppointments.map(appt => 
+                appt.id === updatedAppt.appointment.id ? updatedAppt.appointment : appt
+            )
+        );
+    }
   };
 
   useEffect(() => {
@@ -100,8 +143,9 @@ export default function UserHome() {
     fetchData();
   }, [router]);
 
-  if (loading) {
-    return <p>Loading...</p>;
+if (loading) {
+    // Styling the loading state
+    return <div className="min-h-screen bg-gray-900 text-gray-100 flex items-center justify-center"><p className="text-xl animate-pulse">Loading LeashPals...</p></div>;
   }
 
   const getDogName = (dogId) => {
@@ -203,15 +247,23 @@ export default function UserHome() {
   //----//
 
   return (
-  <div className="min-h-screen p-8 sm:p-16 flex flex-col gap-8 ">
+  // Main container: Dark background, min height, responsive padding
+  <div className="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8 flex flex-col gap-8 md:gap-12">
     {/* Header */}
-    <header className="flex justify-between items-center">
-      <h1 className="text-6xl">Hello {user.username}!</h1>
-      <h2>Role: {user.role}</h2>
-      <div className="flex gap-4">
-        <button className="border px-4 py-2">Settings</button>
-        <button 
-          className="border px-4 py-2"
+    <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-purple-700 pb-4">
+      {/* Name and Role */}
+      <div className="mb-4 sm:mb-0">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-purple-400">Hello {user.username}!</h1>
+        <h2 className="text-lg text-gray-400 mt-1">Role: <span className="font-semibold">{user.role}</span></h2>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex gap-3">
+        <button className="border border-gray-600 text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-200">
+          Settings
+        </button>
+        <button
+          className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200"
           onClick={() => {
             localStorage.removeItem('authToken');
             router.push('/');
@@ -222,48 +274,76 @@ export default function UserHome() {
       </div>
     </header>
 
-    {/* Main Content */}
+    {/* Main Content: Single column on small, two columns on large */}
     <main className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-8">
-      {/* Dogs Section */}
-      <section className="border p-4 flex flex-col items-center">
+      
+      {/* Dogs / Appointments Section - A flexible panel */}
+      <section className="bg-gray-800 p-6 rounded-xl shadow-2xl">
+        <h2 className="text-3xl font-bold border-b border-gray-600 pb-3 mb-5 text-purple-400">
+          {user.role === 'owner' ? 'Your Dogs' : 'Upcoming Appointments'}
+        </h2>
+        
         {user.role === 'owner' ? (
-          <div className="flex gap-4 overflow-auto p-4">
-            <h2 className="text-4xl">Dogs</h2>
+          // Dog List: Horizontal scrolling on small screens, wraps on large
+          <div className="flex gap-4 overflow-x-auto p-2">
             {dogs.filter(dog => dog.owner_id === user.id).map(dog => (
-              <div key={dog.id} className="border p-4 min-w-[150px]">
-                <h3 className="text-lg">{dog.name}</h3>
-                <p className="text-lg">{dog.breed}</p>
-                <p className="text-lg">Age:{dog.age}</p>
-                <p className="text-lg">{dog.personality}</p>
+              // Dog Card Styling
+              <div key={dog.id} className="bg-gray-700 p-4 min-w-[180px] rounded-lg border border-gray-600 hover:border-purple-500 transition duration-200">
+                <h3 className="text-xl font-bold text-teal-400 mb-1">{dog.name}</h3>
+                <p className="text-sm text-gray-300">Breed: {dog.breed}</p>
+                <p className="text-sm text-gray-300">Age: {dog.age}</p>
+                <p className="text-sm italic mt-2">{dog.personality}</p>
               </div>
             ))}
           </div>
         ) : (
-          <div className="flex flex-col gap-4 overflow-auto p-4 ">
-            <h2 className="text-4xl">Appointments</h2>
+          // Walker Appointments List
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {appointments.filter(appt => appt.walker_id === user.id).map(appt => (
-                <div key={appt.id} className="border p-4 min-w-[150px] rounded-md">
-                  <h3 className="text-lg">{getDogName(appt.dog_id)}</h3>
-                  <p className="text-sm text-gray-700">Date: {appt.date}</p>
-                  <p className="text-sm text-gray-700">Time: {appt.time}</p>
-                  <p className="text-sm text-gray-700">{appt.status}</p>
-                  <button>Completed?</button>                                 
-                  </div>
-              ))}
+                // Appointment Card Styling
+                <div key={appt.id} className="bg-gray-700 p-4 rounded-lg border border-gray-600">
+                  <h3 className="text-xl font-bold text-teal-400">{getDogName(appt.dog_id)}</h3>
+                  {/* Note: appt.date and appt.time might be undefined based on your current backend implementation */}
+                  <p className="text-sm text-gray-300 mt-1">Date: {appt.date || 'N/A'}</p>
+                  <p className="text-sm text-gray-300">Time: {appt.time || 'N/A'}</p>
+                  <p className={`text-sm font-semibold mt-2 ${appt.status === 'Completed' ? 'text-green-400' : 'text-yellow-400'}`}>
+                      Status: {appt.status || 'Pending'}
+                  </p>
+                  {/* Only show the button if the appointment is NOT already 'Completed' */}
+                    {appt.status !== 'Completed' && (
+                        <button 
+                            className="mt-3 bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700 transition duration-200"
+                            onClick={() => handleAppointmentComplete(appt.id)}
+                        >
+                            Mark as Completed
+                        </button>
+                    )}
+                </div>
+            ))}
           </div>
         )}
       </section>
 
-      {/* Scheduling Section (Only Owner) */}
+      {/* Scheduling Section (Owner Only) - The action panel */}
       {user.role === 'owner' && (
-        <section className="border p-4 flex flex-col gap-4 items-center">
-          <h2 className="text-4xl">Schedule Appt</h2>
-          <AppointmentScheduler ownerId={user.id} />
-          <DogRegistrationForm ownerId={user.id} />
+        <section className="bg-gray-800 p-6 rounded-xl shadow-2xl flex flex-col gap-6">
+          <h2 className="text-3xl font-bold border-b border-gray-600 pb-3 text-purple-400">Owner Actions</h2>
+          
+          {/* Scheduler Component Container */}
+          <div className="flex-1">
+            <h3 className="text-2xl font-semibold mb-4 text-teal-400">Schedule Appointment</h3>
+            <AppointmentScheduler ownerId={user.id} />
+          </div>
+
+          <hr className="border-gray-600 my-4" />
+          
+          {/* Registration Component Container */}
+          <div className="flex-1">
+            <h3 className="text-2xl font-semibold mb-4 text-teal-400">Register a New Dog</h3>
+            <DogRegistrationForm ownerId={user.id} />
+          </div>
         </section>
       )}
     </main>
   </div>
-);
-
-};
+);};

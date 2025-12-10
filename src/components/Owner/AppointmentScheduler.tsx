@@ -67,65 +67,77 @@ export default function AppointmentScheduler({ ownerId }) {
         }
     };
 
-    return (
-        <div>
-            <main>
-                <h1>Schedule an Appointment</h1>
-                <form onSubmit={handleSubmit}>
-                    <div className="m-2">
-                        <label htmlFor="dog">Select Dog:</label>
-                        <select
-                            id="dog"
-                            value={selectedDogId}
-                            onChange={(e) => setSelectedDogId(e.target.value)}
-                            className="m-2 p-1 text-black"
-                            required
-                        >
-                            <option value="">Select a Dog</option>
-                            {dogs.filter(dog => dog.owner_id === ownerId).map((dog) => (
-                                <option key={dog.id} value={dog.id}>{dog.name}</option>
-                            ))}
-                        </select>
+return (
+        // Removed unnecessary <div> wrapping <main>
+        <main className="bg-gray-800 p-4 rounded-lg"> {/* Added padding and background for component context */}
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                
+                {/* Dog Selection */}
+                <div className="m-0 flex flex-col">
+                    <label htmlFor="dog" className="text-gray-300 mb-1 font-medium">Select Dog:</label>
+                    <select
+                        id="dog"
+                        value={selectedDogId}
+                        onChange={(e) => setSelectedDogId(e.target.value)}
+                        // Styled for dark theme, full width, and proper padding
+                        className="p-2 border border-gray-600 rounded-md bg-gray-700 text-gray-100 w-full focus:ring-2 focus:ring-purple-500"
+                        required
+                    >
+                        <option value="" className="text-gray-400">Select a Dog</option>
+                        {dogs.filter(dog => dog.owner_id === ownerId).map((dog) => (
+                            <option key={dog.id} value={dog.id}>{dog.name}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Walker Selection */}
+                <div className="m-0 flex flex-col">
+                    <label htmlFor="walker" className="text-gray-300 mb-1 font-medium">Select Walker:</label>
+                    <select
+                        id="walker"
+                        value={selectedWalkerId}
+                        onChange={(e) => setSelectedWalkerId(e.target.value)}
+                        // Styled for dark theme, full width, and proper padding
+                        className="p-2 border border-gray-600 rounded-md bg-gray-700 text-gray-100 w-full focus:ring-2 focus:ring-purple-500"
+                        required
+                    >
+                        <option value="" className="text-gray-400">Select a Walker</option>
+                        {walkers.map((walker) => (
+                            <option key={walker.id} value={walker.id}>
+                                {walker.username}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Date & Time Picker */}
+                <div className="m-0 flex flex-col">
+                    <label htmlFor="datetime" className="text-gray-300 mb-1 font-medium">Select Date & Time:</label>
+                    <div className="text-gray-900 mt-1">
+                        {/* The DateTimePicker component is styled via its own CSS imports, so we wrap it to contain it */}
+                        <DateTimePicker
+                            onChange={setAppointmentDate}
+                            value={appointmentDate}
+                            minDate={new Date()}
+                            disableClock={true}
+                            // Applied a class to the wrapper to force the picker colors to fit the dark theme
+                            className="w-full custom-date-time-picker" 
+                        />
                     </div>
+                </div>
 
-                    <div className="m-2">
-                        <label htmlFor="walker">Select Walker:</label>
-                        <select
-                            id="walker"
-                            value={selectedWalkerId}
-                            onChange={(e) => setSelectedWalkerId(e.target.value)}
-                            className="m-2 p-1 text-black"
-                            required
-                        >
-                            <option value="">Select a Walker</option>
-                            {walkers.map((walker) => (
-                                <option key={walker.id} value={walker.id}>
-                                    {walker.username}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                {/* Submit Button */}
+                <button 
+                    type="submit" 
+                    className="mt-2 bg-purple-600 text-white px-4 py-3 rounded-lg font-semibold hover:bg-purple-700 transition duration-200 shadow-md"
+                >
+                    Schedule Appointment
+                </button>
+            </form>
 
-                    <div className="m-2">
-                        <label htmlFor="datetime">Select Date & Time:</label>
-                        <div className="text-black mt-2">
-                            <DateTimePicker
-                                onChange={setAppointmentDate}
-                                value={appointmentDate}
-                                minDate={new Date()}
-                                disableClock={true}
-                            />
-                        </div>
-                    </div>
-
-                    <button type="submit" className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                        Schedule Appointment
-                    </button>
-                </form>
-
-                {error && <p className="text-red-500 mt-2">{error}</p>}
-                {success && <p className="text-green-500 mt-2">{success}</p>}
-            </main>
-        </div>
+            {/* Status Messages */}
+            {error && <p className="text-red-400 mt-4 text-sm font-medium">{error}</p>}
+            {success && <p className="text-green-400 mt-4 text-sm font-medium">{success}</p>}
+        </main>
     );
 }

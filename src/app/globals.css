@@ -20,3 +20,30 @@ body {
   background: var(--background);
   font-family: 'Segoe UI';
 }
+
+/* Custom CSS to help the date picker blend with the dark theme */
+.react-datetime-picker__wrapper {
+  border: 1px solid #4B5563 !important; /* gray-600 */
+  border-radius: 0.375rem; /* rounded-md */
+  background-color: #374151 !important; /* gray-700 */
+  color: #F3F4F6 !important; /* gray-100 */
+  padding: 8px; /* P-2 equivalent */
+}
+
+.react-calendar {
+    border: 1px solid #4B5563 !important; /* gray-600 */
+    background-color: #374151 !important; /* gray-700 */
+}
+
+.react-calendar__tile {
+    color: #F3F4F6 !important;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+    color: #BB86FC !important; /* purple-400 */
+}
+
+/* Ensure the input text is visible */
+.react-datetime-picker__inputGroup {
+    color: #F3F4F6 !important;
+}
